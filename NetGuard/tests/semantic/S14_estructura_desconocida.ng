@@ -1,0 +1,2 @@
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS data
+LET item : NoExiste = NEW NoExiste

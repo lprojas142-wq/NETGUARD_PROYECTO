@@ -1,0 +1,22 @@
+# Estructura definida por el usuario, con lectura, escritura y valores float
+STRUCT Metricas
+    intentos : int
+    volumen : float
+    mensaje : string
+END
+LIMIT umbral : int = 5
+FUNCTION mayor(x : float, y : float) : boolean
+    RETURN x > y
+END
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS traffic
+LET info : Metricas = NEW Metricas
+info.intentos = umbral
+info.volumen = 500.0
+info.mensaje = "Estructura funciona"
+FOR EACH ev IN traffic
+    IF ev.failedAttempts >= info.intentos OR mayor(ev.trafficMB, info.volumen)
+        ALERT info.mensaje FROM ev.sourceIP
+    ELSE
+        MARK ev AS "normal"
+    END
+END

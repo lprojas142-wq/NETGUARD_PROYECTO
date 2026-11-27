@@ -1,0 +1,16 @@
+# Factorial recursivo, llamadas anidadas y dos parámetros
+FUNCTION suma(a : int, b : int) : int
+    RETURN a + b
+END
+FUNCTION factorial(n : int) : int
+    LET resultado : int = 1
+    IF n > 1
+        resultado = n * factorial(n - 1)
+    END
+    RETURN resultado
+END
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS log
+LET valor : int = factorial(suma(2, 3))
+IF valor == 120
+    ALERT "Factorial recursivo 120" FROM 127.0.0.1
+END

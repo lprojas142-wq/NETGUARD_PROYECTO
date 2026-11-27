@@ -1,0 +1,213 @@
+NETGUARD | REGISTRO DE VALIDACIÓN DE LA EDICIÓN INTEGRADA
+Fecha de validación: 2026-11-22
+Entorno: Linux x86-64, Python 3.13.5, GCC disponible.
+Fuente: ZIP NetGuard.zip recibido; edición de representación intermedia solo en cuádruplas.
+Datos de demostración: archivos LOG simulados; no son capturas de tráfico de red en vivo.
+
+RESUMEN
+- Suite principal: 41/41 correctas.
+- Suite adicional de rúbrica: 21/21 correctas.
+- Suite integral Python + backend nativo: 38/38 correctas.
+- Las suites se solapan y no se deben sumar como verificaciones independientes.
+- Prueba de 5,000 eventos: 5,000 analizados, 626 alertas y 4,374 marcados normales.
+- La CLI expone --cuadruplos y no expone --tripletas.
+
+==================== SUITE 1: python pruebas.py ====================
+
+1. Programa de la Fase 1 (secciones 11, 12 y 13 del documento)
+  [OK] compila sin errores
+  [OK] 17 cuádruplas iguales a la tabla 12.3
+  [OK] representación única en cuádruplas (sin conversor ni opción de tripletas)
+  [OK] tabla de símbolos igual a la 11.3
+  [OK] tabla de constantes 4000-4006
+  [OK] las cuatro pilas terminan vacías
+  [OK] optimización 17 → 13 igual a la tabla 13.2
+  [OK] reporte igual al de la sección 14.3
+  [OK] mismo reporte con y sin optimizar
+  [OK] cuádruplos ejecutados 38 → 29 (11/9 → 8 por evento)
+
+2. Expresión aritmética de la sección 10.1
+  [OK] genera *, / y + en el orden de la pila semántica
+  [OK] tipos: * int, / float, + float (promoción)
+
+3. Todas las técnicas de optimización
+  [OK] Plegado de constantes
+  [OK] Propagación de constantes
+  [OK] Simplificación algebraica
+  [OK] Reducción de fuerza
+  [OK] Subexpresiones comunes
+  [OK] Eliminación de código muerto
+  [OK] Movimiento de código invariante
+  [OK] Salto a salto
+  [OK] el resultado no cambia al optimizar
+  [OK] se ejecutan menos cuádruplos
+
+4. IF anidado (puertos.ng)
+  [OK] 4 alertas y 3 eventos marcados
+
+5. Archivo de registro con líneas inválidas
+  [OK] 3 líneas ignoradas con advertencia R02
+  [OK] se procesan las 2 líneas válidas
+
+6. Errores (un archivo por código en ejemplos/errores)
+  [OK] L01_caracter_invalido.ng → L01
+  [OK] L02_cadena_sin_cerrar.ng → L02
+  [OK] P01_sintaxis.ng → P01
+  [OK] P02_falta_end.ng → P02
+  [OK] R01_archivo_no_existe.ng → R01
+  [OK] R03_division_cero.ng → R03
+  [OK] S01_no_declarada.ng → S01
+  [OK] S02_redeclaracion.ng → S02
+  [OK] S03_asignacion.ng → S03
+  [OK] S04_operacion.ng → S04
+  [OK] S05_condicion.ng → S05
+  [OK] S06_solo_lectura.ng → S06
+  [OK] S07_campo.ng → S07
+  [OK] S08_ip_rango.ng → S08
+  [OK] S09_no_coleccion.ng → S09
+  [OK] varios_errores.ng reporta los 5 errores
+
+Resultado: 41 de 41 pruebas correctas.
+
+==================== SUITE 2: python pruebas_rubrica.py ====================
+PRUEBAS EXTRA DE LA RÚBRICA NETGUARD
+  [OK] WHILE y conversión explícita: análisis semántico
+  [OK] WHILE y conversión explícita: salida original = optimizada
+  [OK] WHILE: tres iteraciones correctas
+  [OK] Notaciones prefija y postfija implementadas
+  [OK] WHILE y conversión explícita: ASM x86-64 generado
+  [OK] factorial nativo: análisis semántico
+  [OK] factorial nativo: salida original = optimizada
+  [OK] factorial nativo: algoritmo correcto
+  [OK] factorial nativo: ASM x86-64 generado
+  [OK] fibonacci nativo: análisis semántico
+  [OK] fibonacci nativo: salida original = optimizada
+  [OK] fibonacci nativo: algoritmo correcto
+  [OK] fibonacci nativo: ASM x86-64 generado
+  [OK] reglas de NetGuard: análisis semántico
+  [OK] reglas de NetGuard: salida original = optimizada
+  [OK] reglas de NetGuard: ASM x86-64 generado
+  [OK] Error semántico S10 detectado
+  [OK] Error semántico S05 detectado
+  [OK] factorial: .asm ensamblado, enlazado y ejecutado
+  [OK] fibonacci: .asm ensamblado, enlazado y ejecutado
+  [OK] reglas: .asm ensamblado, enlazado y ejecutado
+
+RESULTADO: 21 correctas, 0 fallidas
+
+==================== SUITE 3: python pruebas_final.py ====================
+
+NETGUARD | VALIDACIÓN INTEGRAL (Python)
+ [OK] ejemplos/reglas.ng · resultado
+ [OK] ejemplos/reglas.ng · equivalencia original/optimizado
+ [OK] ejemplos/while_cast.ng · resultado
+ [OK] ejemplos/while_cast.ng · equivalencia original/optimizado
+ [OK] tests/execution/factorial.ng · resultado
+ [OK] tests/execution/factorial.ng · equivalencia original/optimizado
+ [OK] tests/execution/fibonacci.ng · resultado
+ [OK] tests/execution/fibonacci.ng · equivalencia original/optimizado
+ [OK] tests/execution/funciones.ng · resultado
+ [OK] tests/execution/funciones.ng · equivalencia original/optimizado
+ [OK] tests/execution/recursion.ng · resultado
+ [OK] tests/execution/recursion.ng · equivalencia original/optimizado
+ [OK] tests/execution/promocion_funciones.ng · resultado
+ [OK] tests/execution/promocion_funciones.ng · equivalencia original/optimizado
+ [OK] tests/execution/estructuras.ng · resultado
+ [OK] tests/execution/estructuras.ng · equivalencia original/optimizado
+ [OK] tests/intermediate/ciclos_anidados.ng · resultado
+ [OK] tests/intermediate/ciclos_anidados.ng · equivalencia original/optimizado
+ [OK] ejemplos/reglas.ng · resultado
+ [OK] ejemplos/reglas.ng · equivalencia original/optimizado
+ [OK] tests/semantic/S11_funcion_no_definida.ng · rechazo semántico
+ [OK] tests/semantic/S12_cantidad_argumentos.ng · rechazo semántico
+ [OK] tests/semantic/S13_retorno_incompatible.ng · rechazo semántico
+ [OK] tests/semantic/S14_estructura_desconocida.ng · rechazo semántico
+ [OK] tests/semantic/S07_campo_estructura.ng · rechazo semántico
+ [OK] tests/semantic/S03_parametro_incorrecto.ng · rechazo semántico
+ [OK] División entre cero · VM
+
+NETGUARD | PRUEBAS NATIVAS x86-64 CON GCC
+ [OK] ejemplos/reglas.ng · ASM vs VM
+ [OK] ejemplos/while_cast.ng · ASM vs VM
+ [OK] tests/execution/factorial.ng · ASM vs VM
+ [OK] tests/execution/fibonacci.ng · ASM vs VM
+ [OK] tests/execution/funciones.ng · ASM vs VM
+ [OK] tests/execution/recursion.ng · ASM vs VM
+ [OK] tests/execution/promocion_funciones.ng · ASM vs VM
+ [OK] tests/execution/estructuras.ng · ASM vs VM
+ [OK] tests/intermediate/ciclos_anidados.ng · ASM vs VM
+ [OK] ejemplos/reglas.ng · ASM vs VM
+ [OK] División entre cero · ASM
+
+RESULTADO FINAL: 38 verificaciones correctas; 0 fallidas.
+
+==================== BENCHMARK DEL INTÉRPRETE PYTHON ====================
+Comando: python herramientas/benchmark.py --repeticiones 3
+NETGUARD: BENCHMARK DEL INTÉRPRETE PYTHON
+Se mide tiempo de pared (mediana) y memoria asignada en Python (tracemalloc).
+Tipo           Cuádruplos  Instrucciones   Tiempo (ms)   Memoria pico (MiB)
+Original            17          46259         33.08                2.58
+Optimizado          13          40005         31.16                2.58
+Resultados iguales: SÍ
+Nota: estos tiempos dependen de la carga y hardware; no equivalen a una
+medición de los registros de CPU ni de la asignación de memoria nativa.
+
+==================== PERFIL ESTÁTICO DEL BACKEND x86-64 ====================
+Comando: python herramientas/perfil_codigo_objeto.py
+NETGUARD | PERFIL ESTÁTICO x86-64 (no es RSS real ni tiempo de CPU)
+Archivo fuente: /mnt/data/review_new/NetGuard/ejemplos/reglas.ng
+Original     cuádruplos=17    marcos_de_pila=128 bytes ranuras=7    líneas_asm=94
+Optimizado   cuádruplos=13    marcos_de_pila=112 bytes ranuras=6    líneas_asm=85
+Registros físicos usados por la política de asignación local:
+  - Enteros y booleanos: RAX / RDX
+  - Reales de doble precisión: XMM0 / XMM1
+  - Dirección de eventos y cadenas: RDI / RSI
+  - Funciones de usuario: RDI, RSI, RDX, RCX, R8, R9
+  - Memoria de locales/temporales: RBP - desplazamiento
+  - Variables globales: RIP + g_dirección
+Nota: más/menos líneas de ensamblador no asegura mayor/menor tiempo real.
+Pila informada: tamaño máximo reservado por llamada en el generador, sin sumar profundidad recursiva ni heap del runtime.
+
+==================== REGISTRO SIMULADO DE 5,000 EVENTOS ====================
+Comando:
+python netguard.py ejemplos/reglas.ng ejemplos/NetGuard_Log_Practica_5000_Eventos_SIMULADO.log --reporte reporte_5000.txt
+[MARCADO] 198.51.100.79 -> normal
+Eventos analizados: 5000 | Alertas: 626 | Marcados: 4374
+
+Reporte guardado en /tmp/reporte_5000.txt
+
+Comparación adicional del mismo archivo de 5,000 eventos:
+Comando: python netguard.py ejemplos/reglas.ng ejemplos/NetGuard_Log_Practica_5000_Eventos_SIMULADO.log --comparar
+Resultado: reportes iguales; 17 → 13 cuádruplas estáticas; 46,259 → 40,005 instrucciones ejecutadas (13.5% menos).
+
+==================== INTERPRETACIÓN Y LIMITACIONES ====================
+1. En esta compilación, las 41 pruebas de la suite principal, las 21 adicionales de rúbrica y las 38 integrales terminaron sin fallos.
+2. El benchmark mide tiempo de pared del intérprete Python y asignaciones observadas por tracemalloc. No mide ciclos de CPU ni RSS nativo.
+3. El perfil del backend es estático: informa tamaño calculado de marcos de pila, ranuras, líneas ASM y política local de registros. No es una medición de uso físico real durante una ejecución.
+4. La asignación de registros es local por instrucción y almacena resultados en memoria; no es coloración global de grafos ni análisis completo de vida útil.
+5. El backend de ensamblador es GNU as Intel para Linux x86-64. Para ensamblar, enlazar y ejecutar desde Windows se requiere WSL/Ubuntu con GCC.
+6. NetGuard procesa archivos LOG; no captura paquetes ni supervisa tráfico en vivo.
+7. Los tiempos de benchmark son específicos del entorno y no garantizan la misma mejora en otro equipo.
+
+==================== COMPARACIÓN DE LOG CORRECTO E INCORRECTO (500 EVENTOS) ====================
+Comandos:
+python netguard.py ejemplos/reglas.ng ejemplos/registro_correcto_500.log --reporte reporte_correcto_500.txt
+python netguard.py ejemplos/reglas.ng ejemplos/registro_incorrecto_500.log --reporte reporte_incorrecto_500.txt
+
+LOG correcto:
+Eventos analizados: 500 | Alertas: 69 | Marcados: 431
+Advertencias R02: 0
+
+LOG incorrecto:
+Eventos analizados: 494 | Alertas: 66 | Marcados: 428
+Advertencias R02: 6
+Errores intencionales: IPv4 inválida; puerto no entero; failedAttempts no entero;
+trafficMB no numérico; fila con 5 campos; fila con 7 campos.
+Comportamiento: se omite solamente cada fila incorrecta y el lector continúa.
+
+==================== COMPARACIÓN DE LOG INCORRECTO (5,000 EVENTOS) ====================
+Comando:
+python netguard.py ejemplos/reglas.ng ejemplos/registro_incorrecto_5000.log --reporte reporte_incorrecto_5000.txt
+
+Eventos analizados: 4994 | Alertas: 623 | Marcados: 4371
+Advertencias R02: 6

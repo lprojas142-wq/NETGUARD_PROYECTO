@@ -1,0 +1,21 @@
+name: NetGuard - suites y ensamblador x86-64
+on:
+  push:
+  pull_request:
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar GCC
+        run: gcc --version
+      - name: Pruebas originales
+        run: python pruebas.py
+      - name: Pruebas por rúbrica
+        run: python pruebas_rubrica.py
+      - name: Pruebas finales, incluido ensamblador
+        run: python pruebas_final.py

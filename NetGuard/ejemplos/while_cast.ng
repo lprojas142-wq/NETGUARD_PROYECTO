@@ -1,0 +1,10 @@
+# Demostración de WHILE + casting explícito.
+LIMIT maximo : int = 3
+LOAD EVENTS FROM "red_laboratorio.log" AS traffic
+LET contador : int = 0
+LET real : float = float(7)
+LET redondeado : int = int(3.9)
+WHILE contador < maximo
+    ALERT "Ciclo de prueba" FROM 192.168.1.10
+    contador = contador + 1
+END

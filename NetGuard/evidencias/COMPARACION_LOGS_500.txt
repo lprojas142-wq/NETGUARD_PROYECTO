@@ -1,0 +1,29 @@
+COMPARACIÓN DE LOG CORRECTO E INCORRECTO (500 EVENTOS)
+======================================================
+
+Comando 1:
+py netguard.py ejemplos/reglas.ng ejemplos/registro_correcto_500.log --reporte reporte_correcto_500.txt
+
+Resultado correcto:
+Eventos analizados: 500 | Alertas: 69 | Marcados: 431
+Advertencias R02: 0
+
+Comando 2:
+py netguard.py ejemplos/reglas.ng ejemplos/registro_incorrecto_500.log --reporte reporte_incorrecto_500.txt
+
+Resultado incorrecto:
+Eventos analizados: 494 | Alertas: 66 | Marcados: 428
+Advertencias R02: 6
+
+Las seis filas inválidas contienen:
+1. sourceIP 192.0.2.999: IPv4 inválida.
+2. port = veintidos: no es entero.
+3. failedAttempts = muchos: no es entero.
+4. trafficMB = mucho: no es numérico.
+5. Fila con cinco campos: falta status.
+6. Fila con siete campos: un campo adicional.
+
+Conclusión:
+El lector registra R02 y omite únicamente cada línea malformada. Los 494 eventos
+restantes se procesan sin detener toda la ejecución. R02 es una advertencia del
+archivo LOG, no un error de sintaxis del programa .ng.

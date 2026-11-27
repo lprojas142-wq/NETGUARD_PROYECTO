@@ -1,0 +1,5 @@
+FUNCTION doble(x : int) : int
+    RETURN x * 2
+END
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS data
+LET x : int = doble(1, 2)

@@ -1,0 +1,25 @@
+# Funcion de usuario con parametros, retorno y llamada desde una regla
+LIMIT limite : int = 5
+FUNCTION doble(x : int) : int
+    LET resultado : int = x * 2
+    RETURN resultado
+END
+FUNCTION factorial(n : int) : int
+    LET acum : int = 1
+    LET paso : int = 1
+    WHILE paso <= n
+        acum = acum * paso
+        paso = paso + 1
+    END
+    RETURN acum
+END
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS trafico
+LET resultado : int = factorial(limite)
+LET umbral : int = doble(resultado)
+FOR EACH evento IN trafico
+    IF evento.failedAttempts >= limite OR evento.trafficMB > float(umbral)
+        ALERT "Funcion de usuario activa" FROM evento.sourceIP
+    ELSE
+        MARK evento AS "normal"
+    END
+END

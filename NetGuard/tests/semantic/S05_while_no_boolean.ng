@@ -1,0 +1,5 @@
+# Debe producir S05: WHILE requiere una condición booleana.
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS traffic
+WHILE 5
+    ALERT "Error de condición" FROM 127.0.0.1
+END

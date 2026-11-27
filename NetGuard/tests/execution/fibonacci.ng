@@ -1,0 +1,15 @@
+# Caso de prueba de código objeto: F(8) = 21.
+LIMIT meta : int = 8
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS traffic
+LET a : int = 0
+LET b : int = 1
+LET contador : int = 0
+WHILE contador < meta
+    LET siguiente : int = a + b
+    a = b
+    b = siguiente
+    contador = contador + 1
+END
+IF a == 21
+    ALERT "Fibonacci F8 correcto: 21" FROM 127.0.0.1
+END

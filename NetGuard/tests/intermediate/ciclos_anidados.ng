@@ -1,0 +1,15 @@
+# Bucles anidados: 3 x 2 = 6, valida saltos y memoria de temporales.
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS data
+LET i : int = 0
+LET total : int = 0
+WHILE i < 3
+    LET j : int = 0
+    WHILE j < 2
+        total = total + 1
+        j = j + 1
+    END
+    i = i + 1
+END
+IF total == 6
+    ALERT "Ciclos anidados 6" FROM 127.0.0.1
+END

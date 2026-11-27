@@ -1,0 +1,29 @@
+# Python y entorno local
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+# Resultados y binarios generados
+reporte*.txt
+*.o
+*.obj
+*.exe
+*.out
+salida*.asm
+recursion.asm
+factorial.asm
+fibonacci.asm
+nativo/*_nativo
+nativo/*.o
+# Editores y sistema
+.DS_Store
+Thumbs.db
+.vscode/.ropeproject/
+*.swp
+# Documentos personales o privados (no subir si contienen datos reales)
+.env
+*.key
+*.pem

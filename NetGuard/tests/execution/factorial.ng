@@ -1,0 +1,12 @@
+# Caso de prueba de código objeto: factorial de 5 = 120.
+LIMIT meta : int = 5
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS traffic
+LET numero : int = 1
+LET factorial : int = 1
+WHILE numero <= meta
+    factorial = factorial * numero
+    numero = numero + 1
+END
+IF factorial == 120
+    ALERT "Factorial de 5 correcto: 120" FROM 127.0.0.1
+END

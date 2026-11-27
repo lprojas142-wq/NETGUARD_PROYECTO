@@ -1,0 +1,3 @@
+# Debe producir S10: no es válido convertir una cadena a entero.
+LIMIT numero : int = int("texto")
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS traffic

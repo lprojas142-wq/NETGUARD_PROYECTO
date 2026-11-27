@@ -1,0 +1,5 @@
+FUNCTION rompe(x : int) : int
+    RETURN "texto"
+END
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS data
+LET x : int = rompe(5)

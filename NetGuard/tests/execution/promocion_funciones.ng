@@ -1,0 +1,13 @@
+# Promoción de tipos en argumentos y RETURN de funciones usuario
+FUNCTION promueve(x : int) : float
+    RETURN x
+END
+FUNCTION identidad(x : float) : float
+    RETURN x
+END
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS log
+LET n : float = identidad(5)
+LET m : float = promueve(7)
+IF n == 5.0 AND m == 7.0
+    ALERT "Promocion de funciones correcta" FROM 127.0.0.1
+END

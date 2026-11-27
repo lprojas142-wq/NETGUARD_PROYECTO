@@ -1,0 +1,209 @@
+NETGUARD — GUÍA DE EJECUCIÓN Y DEFENSA EN VISUAL STUDIO CODE
+============================================================
+Versión integrada: compilador Python + máquina virtual + backend ASM x86-64.
+Representación intermedia elegida: CUÁDRUPLAS EXCLUSIVAMENTE.
+
+1. ABRIR EL PROYECTO
+--------------------
+En Visual Studio Code selecciona File > Open Folder y abre la carpeta
+NetGuard (la que contiene netguard.py). Después abre Terminal > New Terminal.
+No escribas el prompt PS C:\...>; ese texto lo muestra PowerShell.
+
+Verifica:
+    py --version
+    dir
+
+Debes ver netguard.py, pruebas.py, compilador, ply, ejemplos, tests y nativo.
+Si el comando py no existe, intenta python --version y usa python en los
+comandos siguientes.
+
+2. PRUEBAS AUTOMÁTICAS EN WINDOWS
+--------------------------------
+Ejecuta, una por una:
+    py pruebas.py
+    py pruebas_rubrica.py
+    py pruebas_final.py --sin-asm
+
+La suite base debe indicar 41 de 41. La suite adicional de rúbrica prueba
+casts, WHILE, notación prefija/postfija, generación de ASM y algoritmos; las
+pruebas que ensamblan ejecutables se omiten en Windows sin WSL. La suite final
+con --sin-asm valida el intérprete Python sin intentar GCC/Linux.
+
+En Linux/WSL, con GCC instalado, ejecuta sin --sin-asm:
+    python3 pruebas.py
+    python3 pruebas_rubrica.py
+    python3 pruebas_final.py
+
+3. COMANDOS DE DEMOSTRACIÓN EN VS CODE (WINDOWS)
+------------------------------------------------
+Programa principal y todas las fases:
+    py netguard.py ejemplos/reglas.ng --todo
+
+Análisis léxico:
+    py netguard.py ejemplos/reglas.ng --tokens --no-ejecutar
+
+Árbol de expresión, prefija y postfija:
+    py netguard.py ejemplos/riesgo.ng --arbol --no-ejecutar
+
+Pila semántica:
+    py netguard.py ejemplos/riesgo.ng --traza --no-ejecutar
+
+Tabla de símbolos, constantes y direcciones:
+    py netguard.py ejemplos/reglas.ng --tabla --direcciones --no-ejecutar
+
+Representación intermedia (únicamente cuádruplas):
+    py netguard.py ejemplos/reglas.ng --cuadruplos --no-ejecutar
+
+Optimización y comparación:
+    py netguard.py ejemplos/reglas.ng --optimizado --comparar
+
+Política de registros físicos x86-64:
+    py netguard.py ejemplos/reglas.ng --registros --no-ejecutar
+
+Funciones y recursión:
+    py netguard.py tests/execution/funciones.ng --comparar
+    py netguard.py tests/execution/recursion.ng --comparar
+
+Estructuras definidas por el usuario:
+    py netguard.py tests/execution/estructuras.ng --arbol --cuadruplos
+
+Ciclos anidados:
+    py netguard.py tests/intermediate/ciclos_anidados.ng --comparar
+
+Caso de error sintáctico (debe rechazarlo):
+    py netguard.py ejemplos/errores/P01_sintaxis.ng
+
+Caso de error semántico (debe rechazarlo):
+    py netguard.py tests/semantic/S11_funcion_no_definida.ng
+
+Log con líneas inválidas:
+    py netguard.py ejemplos/reglas.ng ejemplos/registro_con_errores.log
+
+Prueba con 5,000 eventos simulados:
+    py netguard.py ejemplos/reglas.ng ejemplos/NetGuard_Log_Practica_5000_Eventos_SIMULADO.log --reporte reporte_5000.txt
+
+Comparación de LOG correcto e incorrecto (500 eventos):
+    py netguard.py ejemplos/reglas.ng ejemplos/registro_correcto_500.log --reporte reporte_correcto_500.txt
+    py netguard.py ejemplos/reglas.ng ejemplos/registro_incorrecto_500.log --reporte reporte_incorrecto_500.txt
+
+Resultado esperado:
+    LOG correcto:   500 eventos analizados, 0 advertencias R02.
+    LOG incorrecto: 494 eventos analizados, 6 advertencias R02.
+    Los dos archivos tienen 500 filas de datos. En el incorrecto se dañaron
+    intencionalmente una IP, dos enteros/campos numéricos, el número de campos
+    de una fila por defecto y el número de campos de otra fila por exceso.
+
+Comparación para el conjunto grande de 5,000 eventos:
+    py netguard.py ejemplos/reglas.ng ejemplos/NetGuard_Log_Practica_5000_Eventos_SIMULADO.log --reporte reporte_correcto_5000.txt
+    py netguard.py ejemplos/reglas.ng ejemplos/registro_incorrecto_5000.log --reporte reporte_incorrecto_5000.txt
+
+Medición de tiempo y memoria Python:
+    py herramientas/benchmark.py
+
+Perfil estático del código objeto:
+    py herramientas/perfil_codigo_objeto.py
+
+4. GENERACIÓN DE ENSAMBLADOR Y EJECUCIÓN NATIVA
+------------------------------------------------
+Se puede generar el archivo .asm desde Windows:
+    py netguard.py tests/execution/factorial.ng --asm factorial.asm --no-ejecutar
+
+El ASM generado usa GNU as, sintaxis Intel, ABI System V y destino Linux
+x86-64. No es un .exe de Windows. Para ensamblar, enlazar y ejecutar se
+requiere Linux x86-64 o WSL Ubuntu con Bash y GCC.
+
+Desde la terminal WSL, cambia a la ruta equivalente del disco Windows. Por
+ejemplo, D:\Proyectos\NetGuard normalmente se ve como /mnt/d/Proyectos/NetGuard:
+    cd /mnt/d/Proyectos/NetGuard
+    bash nativo/compilar_linux.sh factorial.asm nativo/factorial_nativo
+    ./nativo/factorial_nativo
+
+En Ubuntu, si GCC no está instalado:
+    sudo apt update
+    sudo apt install -y gcc
+
+5. CÓMO EXPLICAR LAS TRES CAPAS
+--------------------------------
+FRONT-END:
+  lexer.py     Convierte texto fuente en tokens.
+  parser.py    Reconoce la gramática y ejecuta acciones semánticas dirigidas
+               por sintaxis.
+  semantic.py  Verifica tipos, administra pilas semánticas y árboles.
+  symtable.py  Administra símbolos, ámbitos y direcciones virtuales.
+
+MIDDLE-END:
+  codegen.py   Genera las cuádruplas, enumera instrucciones y aplica
+               backpatching para completar destinos de saltos.
+  optimizer.py Optimiza cuádruplas y registra los cambios en una bitácora.
+
+BACK-END:
+  vm.py            Interpreta cuádruplas en Python.
+  register_alloc.py Describe la asignación local de registros físicos.
+  asm_codegen.py   Traduce cuádruplas optimizadas a ASM x86-64 Linux.
+  nativo/runtime.c Resuelve entrada/salida de logs, eventos y estructuras.
+
+netguard.py coordina la CLI y las fases; errors.py centraliza los códigos de
+error; ply/ contiene la biblioteca usada para lexer y parser.
+
+6. EJEMPLO PRINCIPAL: reglas.ng
+--------------------------------
+LIMIT maxAttempts : int = 5
+LIMIT trafficLimit : float = 500.0
+LOAD EVENTS FROM "red_laboratorio.log" AS traffic
+FOR EACH event IN traffic
+    LET suspicious : boolean = false
+    IF event.failedAttempts >= maxAttempts OR event.trafficMB > trafficLimit
+        suspicious = true
+        ALERT "Evento sospechoso" FROM event.sourceIP
+    ELSE
+        MARK event AS "normal"
+    END
+END
+
+Interpretación: por cada evento, se comparan intentos fallidos y tráfico.
+Si al menos una condición se cumple se genera ALERT; de lo contrario MARK.
+
+7. QUÉ DEMUESTRAN LOS EJEMPLOS
+------------------------------
+  reglas.ng             Flujo integral: LOAD, FOR EACH, IF/ELSE, ALERT y MARK.
+  riesgo.ng             Operaciones aritméticas y precedencia.
+  puertos.ng            IF anidados y operadores lógicos.
+  optimizacion.ng       Las técnicas de optimización.
+  while_cast.ng         WHILE y conversiones explícitas.
+  tests/execution/      Factorial, Fibonacci, funciones, recursión, STRUCT.
+  tests/intermediate/   Ciclos anidados y código intermedio.
+  tests/semantic/       Errores intencionales de análisis semántico.
+  ejemplos/errores/     Casos léxicos, sintácticos, semánticos y de ejecución.
+
+8. RESULTADOS QUE SE HAN COMPROBADO
+-----------------------------------
+En el entorno Linux x86-64 de revisión:
+  pruebas.py          41/41 correctas.
+  pruebas_rubrica.py  21/21 correctas.
+  pruebas_final.py    38/38 correctas, con GCC y ejecución nativa.
+
+Con el archivo LOG simulado de 5,000 eventos:
+  5,000 eventos analizados; 626 alertas; 4,374 marcados normales.
+
+Las suites se solapan y no deben sumarse como pruebas independientes. Los
+resultados deben reproducirse en la computadora del equipo antes de exponer.
+
+9. LIMITACIONES QUE DEBEN EXPLICARSE CON HONESTIDAD
+---------------------------------------------------
+  * NetGuard procesa archivos LOG guardados; no captura tráfico en vivo.
+  * El backend nativo es GNU as/Intel para Linux x86-64; Windows requiere WSL.
+  * El asignador de registros es local por instrucción, no global por vida útil.
+  * La optimización de invariantes de ciclos está acotada a patrones FOR EACH.
+  * Los benchmarks miden tiempo de pared y asignaciones de memoria Python;
+    el perfil nativo es estático y no mide RSS real ni ciclos de CPU.
+  * Las funciones admiten hasta seis parámetros; STRUCT usa campos básicos.
+
+10. ANTES DE ENTREGAR
+---------------------
+[ ] Ejecutar las tres suites en el equipo donde se hará la exposición.
+[ ] Generar y ejecutar un ASM desde Linux/WSL.
+[ ] Capturar tokens, árbol, traza, tabla, cuádruplas y optimización.
+[ ] Completar autores y docente en el informe técnico.
+[ ] Añadir capturas reales al portafolio.
+[ ] Publicar el repositorio y revisar la ejecución de CI.
+[ ] Verificar que las salidas de código intermedio muestren únicamente cuádruplas.

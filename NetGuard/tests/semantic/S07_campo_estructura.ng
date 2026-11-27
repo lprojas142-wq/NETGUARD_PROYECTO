@@ -1,0 +1,6 @@
+STRUCT Prueba
+    valor : int
+END
+LOAD EVENTS FROM "../../ejemplos/red_laboratorio.log" AS data
+LET objeto : Prueba = NEW Prueba
+objeto.inexistente = 2
